@@ -148,7 +148,11 @@ module ActiveMerchant #:nodoc:
         post = {}
         post[:pan] = credit_card.number
         post[:expdate] = expdate(credit_card)
+        post[:cvd_value] = credit_card.verification_value
+        post[:address] = options[:billing_address] || options[:address]
         post[:crypt_type] = options[:crypt_type] || @options[:crypt_type]
+        add_stored_credential(post, options)
+
         if options[:duration]
           post[:duration] = options[:duration]
           commit('res_temp_add', post)
@@ -167,6 +171,7 @@ module ActiveMerchant #:nodoc:
         post = {}
         post[:pan] = credit_card.number
         post[:expdate] = expdate(credit_card)
+        post[:cvd_value] = credit_card.verification_value
         post[:data_key] = data_key
         post[:crypt_type] = options[:crypt_type] || @options[:crypt_type]
         commit('res_update_cc', post)
@@ -414,10 +419,10 @@ module ActiveMerchant #:nodoc:
             'Batchcloseall' => [],
             'opentotals' => [:ecr_number],
             'batchclose' => [:ecr_number],
-            'res_add_cc' => [:pan, :expdate, :crypt_type, :cof_info],
+            'res_add_cc' => [:pan, :expdate, :crypt_type, :avs_info, :cvd_info, :cof_info],
             'res_temp_add' => [:pan, :expdate, :crypt_type, :duration],
             'res_delete' => [:data_key],
-            'res_update_cc' => [:data_key, :pan, :expdate, :crypt_type],
+            'res_update_cc' => [:data_key, :pan, :expdate, :crypt_type, :avs_info, :cvd_info, :cof_info],
             'res_purchase_cc' => [:data_key, :order_id, :cust_id, :amount, :crypt_type, :cof_info],
             'res_preauth_cc' => [:data_key, :order_id, :cust_id, :amount, :crypt_type, :cof_info]
         }
